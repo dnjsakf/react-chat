@@ -1,0 +1,25 @@
+{
+  "presets": [
+    ["@babel/preset-env",{ "modules": false }], 
+    ["@babel/preset-react",{ "modules": false }]
+  ],
+  "plugins": [
+    [ "module-resolver", {
+        "root": [ "./src" ],
+        "alias": {
+          "@public": "./public",
+          "@src": "./src",
+          "@components": "./src/components",
+          "@layouts": "./src/layouts",
+          "@reducers": "./src/reducers",
+          "@routes": "./src/routes",
+          "@theme": "./src/theme",
+          "@utils": "./src/utils"
+        }
+      }
+    ],
+    [ "@babel/plugin-proposal-decorators", { "legacy": true } ],
+    "@babel/plugin-proposal-class-properties",
+    "react-hot-loader/babel"
+  ]
+}
