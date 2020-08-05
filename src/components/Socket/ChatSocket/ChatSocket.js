@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 /* Styled */
 import styled from 'styled-components';
 
-/* Other Modules */
+/* Socket */
 import io from 'socket.io-client';
 
 /* Styled Components */
@@ -29,6 +29,7 @@ const MessageList = styled.ul`
 const MessageItem = styled.li`
 `;
 
+/* Custom Hooks */
 const useSocket = props =>{
   const {
     uri,
@@ -56,7 +57,6 @@ useSocket.defaultProps = {
     reconnection: false
   }
 }
-
 
 /* Main Component */
 const ChatSocket = props => {
@@ -116,10 +116,6 @@ const ChatSocket = props => {
 
         setMessages(( _messages )=> [].concat( _messages, data) );
       });
-
-      return ()=>{
-        socket.disconnect();
-      }
     }
   }, [ socket ]);
 
