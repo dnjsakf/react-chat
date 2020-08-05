@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx webpack --config .webpack/webpack.config.prod.js",
-    "dev": "npx webpack-dev-server --config .webpack/webpack.config.dev.js",
+    "dev": "npx webpack-dev-server --config .webpack/webpack.config.dev.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.4",

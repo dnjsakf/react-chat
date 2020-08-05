@@ -5,32 +5,28 @@ import PropTypes from 'prop-types';
 /* Styled */
 import styled from 'styled-components';
 
-/* Custom Components */
-import { ChatSocket } from '@components/Socket';
-
 /* Styled Components */
 const Container = styled.div`
 `;
 
 /* Main Component */
-const Home = props => {
+const Templates = props => {
   /* Props */
   const {
-    ...rest
+    ..rest
   } = props;
-  
+ 
   /* Renderer */
   return (
     <Container>
-      Home
-      <ChatSocket />
+      Templates
     </Container>
   );
 }
 
 /* Main Component Settings */
-Home.propTypes = {
-}
- 
+Templates.propTypes = { }
+Templates.defaultProps = { }
+
 /* Exports */
-export default Home;
+export default Templates;

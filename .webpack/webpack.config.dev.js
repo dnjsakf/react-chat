@@ -10,7 +10,6 @@ module.exports = merge(config, {
   plugins: [
     new webpack.DefinePlugin({
       PRODUCTION: JSON.stringify(false),
-      GRAPHQL_URL: JSON.stringify("http://localhost:3000/graphql"),
     }),
     new webpack.EnvironmentPlugin({
       LOGGING_LEVEL: JSON.stringify("DEBUG"),
@@ -33,15 +32,17 @@ module.exports = merge(config, {
     host: "localhost",
     port: 4000,
     hot: true,
+    watchContentBase: true,
     contentBase: config.output.path,
     publicPath: config.output.publicPath,
     historyApiFallback: true,
     proxy: {
       '/api': {
-        target: "http://localhost:4001/api"
+        target: "http://localhost:3000"
       },
-      '/chat': {
-        target: "http://localhost:3000/chat"
+      '/socket.io': {
+        target: "http://localhost:3000",
+        ws: true,
       }
     }
   },
