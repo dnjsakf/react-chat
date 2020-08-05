@@ -1,5 +1,5 @@
 /* React */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 /* Styled */
@@ -12,6 +12,22 @@ import io from 'socket.io-client';
 const Container = styled.div`
 `;
 
+const MessageWrapper = styled.div`
+  position: relative;
+  width: 200px;
+  height: 350px;
+  overflow-y: scroll;
+`;
+const MessageList = styled.ul`
+  position: absolute;
+  bottom: 0; 
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  max-height: 350px;
+`;
+const MessageItem = styled.li`
+`;
 
 const useSocket = props =>{
   const {
@@ -20,15 +36,13 @@ const useSocket = props =>{
   } = props;
   
   const [ socket, setSocket ] = useState(null);
-  
-  const handleConnect = useCallback(()=>{
-    setSocket(io( uri, options));
-  }, []);
-  
-  const handleDisconnect = useCallback(()=>{
-    if( socket && socket.connected ){
-      socket.disconnect();
-    }
+
+  useEffect(()=>{
+    const _socket = io(uri, options);
+
+    setSocket(_socket);
+
+    return ()=>( _socket.disconnect() )
   }, []);
   
   return socket;
@@ -52,7 +66,9 @@ const ChatSocket = props => {
   } = props;
   
   /* State */
-  const [ message, setMessage ] = useState("");
+  const scrollRef = useRef();
+  const [ messages, setMessages ] = useState([]);
+  const [ value, setValue ] = useState("");
   const socket = useSocket({
     uri: "http://localhost:3000/chat?username=dochi",
     options: {
@@ -64,24 +80,19 @@ const ChatSocket = props => {
   const handleSubmit = useCallback( event => {
     event.preventDefault();
     
-    socket.emit("send_message", {
+    const send_data = {
       room: "lobby",
-      message: message
-    });
-    
-  }, [ socket, message ]);
-  
-  const handleChangeMessage = useCallback( event => {
-    setMessage( event.target.value );
-  }, [ socket ]);
-  
-  /* Side Effects */
-  useEffect(()=>{
-    if( socket ){
-      socket.connect();
+      message: value
     }
+    socket.emit("send_message", send_data, ()=> setValue("") );
+
+  }, [ socket, value ]);
+  
+  const handleChange = useCallback( event => {
+    setValue( event.target.value );
   }, []);
   
+  /* Side Effects */
   useEffect(()=>{
     if( socket ){
       socket.on("connect", ()=>{
@@ -102,21 +113,36 @@ const ChatSocket = props => {
       
       socket.on("receive_message", ( data )=>{
         console.log("receive message:", data);
+
+        setMessages(( _messages )=> [].concat( _messages, data) );
       });
-      
+
       return ()=>{
-        console.log( socket );
         socket.disconnect();
       }
     }
   }, [ socket ]);
+
+  useEffect(()=>{
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [ messages ]);
  
   /* Renderer */
   return (
     <Container>
-      ChatSocket
+      <MessageWrapper ref={ scrollRef }>
+        <MessageList>
+          {
+            messages.map(({ user, message }, idx )=>(
+              <MessageItem key={ idx }>
+                { `${user.name}: ${message}` }
+              </MessageItem>
+            ))
+          }
+        </MessageList>
+      </MessageWrapper>
       <form onSubmit={ handleSubmit }>
-        <input value={ message } onChange={ handleChangeMessage }/>
+        <input value={ value } onChange={ handleChange }/>
         <button type="submit">send</button>
       </form>
     </Container>
